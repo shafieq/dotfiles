@@ -1,0 +1,274 @@
+[colors]
+darkred = 	${xrdb:color1:#cc241d}
+darkgreen = 	${xrdb:color2:#98971a}
+darkyellow = 	${xrdb:color3:#d79921}
+darkblue = 	${xrdb:color4:#458588}
+darkmagenta = 	${xrdb:color5:#b16286}
+darkcyan = 	${xrdb:color6:#689d6a}
+lightgray = 	${xrdb:color7:#a89984}
+gray = 		${xrdb:color8:#928374}
+red = 		${xrdb:color9:#fb4934}
+green = 	${xrdb:color10:#b8bb26}
+yellow = 	${xrdb:color11:#fabd2f}
+blue = 		${xrdb:color12:#83a598}
+magenta = 	${xrdb:color13:#d3869b}
+cyan = 		${xrdb:color14:#8ec07c}
+background = 	${xrdb:color0:#1d2021}
+foreground = 	${xrdb:color15:#dadada}
+
+[bar/default]
+;monitor = ${env:MONITOR:LVDS-1}
+;monitor = ${env:MONITOR:HDMI-1}
+enable-ipc = true
+width = 100%
+height = 24
+;fixed-center = true
+bottom = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 1
+line-color = {$xrdb:red}
+
+border-size = 0
+border-color = ${colors.foreground}
+
+padding-left = 0
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 1
+
+font-0 = SauceCodePro Nerd Font:pixelsize=11;1
+font-1 = "Font Awesome 5 Free:style=Solid:pixelsize=10;3"
+font-2 = "Font Awesome 5 Free:style=Regular:pixelsize=10;3"
+font-3 = "Font Awesome 5 Brands:pixelsize=10;3"
+
+; Other modules: cpu xbacklight filesystem mutt-wizard memory
+modules-left = bspwm xwindow
+modules-center =
+modules-right = volume wlan battery temperature date
+
+tray-position = right
+tray-padding = 0
+
+wm-restack = bspwm
+
+;override-redirect = true
+
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+
+[module/mutt-wizard]
+
+type = custom/script
+exec = mailbox
+interval = 5
+format-prefix = " "
+;format-underline = ${colors.red}
+
+click-left = urxvt -e neomutt
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:1:00:...%
+format-foreground = ${colors.foreground}
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+mount-1 = /home
+
+label-mounted-underline = ${colors.cyan}
+label-mounted = /: %percentage_used%%
+label-unmounted = %mountpoint% not mounted
+label-unmounted-foreground = ${colors.gray}
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-foreground = ${colors.background}
+label-focused-background = ${colors.darkblue}
+;label-focused-underline= ${colors.yellow}
+label-focused-padding = 1
+
+label-occupied = %index%
+label-occupied-background = ${colors.darkred}
+;label-occupied-underline = ${colors.red}
+label-occupied-padding = 1
+
+label-urgent = %index%!
+label-urgent-background = ${colors.red}
+label-urgent-padding = 1
+
+label-empty = %index%
+label-empty-foreground = ${colors.lightgray}
+label-empty-padding = 1
+
+format = <label-state> <label-mode>
+
+label-monocle = " [M]"
+label-monocle-foreground = ${colors.lightgray}
+label-tiled = " [T] "
+label-tiled-foreground = ${colors.lightgray}
+label-fullscreen = "  "
+label-fullscreen-foreground = ${colors.lightgray}
+label-floating = " < > "
+label-floating-foreground = ${colors.green}
+label-pseudotiled = "  "
+label-pseudotiled-foreground = ${colors.lightgray}
+label-locked = "  "
+label-locked-foreground = ${colors.red}
+label-sticky = "  "
+label-sticky-foreground = ${colors.darkred}
+label-private =  "     "
+label-private-foreground = ${colors.blue}
+
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+
+[module/xbacklight]
+type = internal/xbacklight
+
+; Use the following command to list available cards:
+; $ ls -1 /sys/class/backlight/
+card = intel_backlight
+format =  <label>
+
+; Available tokens:
+;   %percentage% (default)
+label = %percentage%%
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format-prefix = ""
+format-prefix-foreground = ${colors.red}
+;format-underline = ${colors.red}
+label = %percentage%%
+
+[module/memory]
+type = internal/memory
+interval = 2
+format-prefix = "🧠 "
+format-prefix-foreground = ${colors.gray}
+format-underline = ${colors.darkcyan}
+label = %percentage_used%%
+
+[module/wlan]
+type = internal/network
+interface = wlp2s0
+interval = 5
+
+label-connected =  %essid%
+label-connected-foreground = ${colors.red}
+label-disconnected =
+
+[module/eth]
+type = internal/network
+interface = enp0s25
+interval = 3.0
+
+format-connected-underline = ${colors.darkgreen}
+;format-connected-underline = ${colors.green}
+format-connected-prefix = " "
+format-connected-prefix-foreground = ${colors.gray}
+label-connected = %local_ip%
+
+;format-disconnected =
+format-disconnected = <label-disconnected>
+format-disconnected-underline = ${self.format-connected-underline}
+label-disconnected =  %ifname%
+label-disconnected-foreground = ${colors.gray}
+
+[module/date]
+type = internal/date
+interval = 60
+
+date = "[%a] %d %b %y"
+time = "%H:%M"
+
+format-foreground = ${colors.foreground}
+
+format-prefix = " "
+format-prefix-foreground = ${colors.darkyellow}
+format-underline = ${colors.background}
+
+label = %time% %date%
+
+[module/volume]
+type = internal/alsa
+
+format-volume = <ramp-volume> <label-volume>
+format-muted =  0%
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+ramp-volume-foreground = ${colors.magenta}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 98
+
+;format-charging = Charging... <label-charging>
+format-charging = <animation-charging> <label-charging>
+format-charging-underline = ${colors.background}
+
+;format-discharging = <label-discharging>
+format-discharging = <ramp-capacity> <label-discharging>
+format-discharging-underline = ${self.format-charging-underline}
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.green}
+format-full-underline = ${self.format-charging-underline}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-foreground = ${colors.darkgreen}
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-foreground = ${colors.darkgreen}
+animation-charging-framerate = 500
+
+[module/temperature]
+type = internal/temperature
+interval = 5
+thermal-zone = 0
+warn-temperature = 60
+
+format = <ramp> <label>
+format-underline = ${colors.background}
+format-warn = <ramp> <label-warn>
+format-warn-underline = ${self.format-underline}
+
+label = %temperature-c%
+label-warn = %temperature-c%
+label-warn-foreground = ${colors.red}
+
+ramp-0 = 
+ramp-1 = 
+ramp-2 = 
+ramp-foreground = ${colors.blue}
+
+;**********************************************************
+;
+;                       GLOBAL WM SETTINGS
+;
+;**********************************************************
+[global/wm]
+margin-top = 0
+margin-bottom = 0
