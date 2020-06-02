@@ -13,20 +13,20 @@ yellow = 	${xrdb:color11:#fabd2f}
 blue = 		${xrdb:color12:#83a598}
 magenta = 	${xrdb:color13:#d3869b}
 cyan = 		${xrdb:color14:#8ec07c}
-background = 	${xrdb:color0:#1d2021}
-foreground = 	${xrdb:color15:#dadada}
+background = 	${xrdb:color0:#282828}
+foreground = 	${xrdb:color15:#edbbb2}
 
 [bar/default]
+;monitor = ${env:MONITOR:DisplayPort-0}
 ;monitor = ${env:MONITOR:LVDS-1}
 ;monitor = ${env:MONITOR:HDMI-1}
 enable-ipc = true
 width = 100%
-height = 24
-;fixed-center = true
-bottom = true
+height = 22
+separator =
 
-background = ${colors.background}
-foreground = ${colors.foreground}
+background = #121212
+foreground = #bcbcbc
 
 line-size = 1
 line-color = {$xrdb:red}
@@ -40,15 +40,15 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = SauceCodePro Nerd Font:pixelsize=11;1
-font-1 = "Font Awesome 5 Free:style=Solid:pixelsize=10;3"
-font-2 = "Font Awesome 5 Free:style=Regular:pixelsize=10;3"
-font-3 = "Font Awesome 5 Brands:pixelsize=10;3"
+font-0 = Hack Nerd Font:pixelsize=10;1
+font-1 = NotoColorEmoji:fontformat=truetype:scale=12:antialias=false;
+font-2 = FontAwesome5Free:fontformat=truetype:scale=5:antialias=false;
+;font-2 = "Font Awesome 5 Free:style=Solid:pixelsize=15;3"
 
-; Other modules: cpu xbacklight filesystem mutt-wizard memory
+; Other modules: cpu uptime xbacklight weather filesystem temperature mutt-wizard memory
 modules-left = bspwm xwindow
 modules-center =
-modules-right = volume wlan battery temperature date
+modules-right = cpu temperature weather volume wlan battery2 date
 
 tray-position = right
 tray-padding = 0
@@ -60,6 +60,13 @@ wm-restack = bspwm
 scroll-up = bspwm-desknext
 scroll-down = bspwm-deskprev
 
+[module/crypto]
+type = custom/script
+exec = crypto
+interval = 0
+click-left = $BROWSER https://coinmarketcap.com/ &
+click-right = notifycrypto
+
 [module/mutt-wizard]
 
 type = custom/script
@@ -68,12 +75,12 @@ interval = 5
 format-prefix = " "
 ;format-underline = ${colors.red}
 
-click-left = urxvt -e neomutt
+click-left = st -e neomutt
 
 [module/xwindow]
 type = internal/xwindow
-label = %title:1:00:...%
-format-foreground = ${colors.foreground}
+label = %title:0:50:...%
+format-foreground = #bcbcbc
 
 [module/filesystem]
 type = internal/fs
@@ -91,14 +98,14 @@ label-unmounted-foreground = ${colors.gray}
 type = internal/bspwm
 
 label-focused = %index%
-label-focused-foreground = ${colors.background}
-label-focused-background = ${colors.darkblue}
-;label-focused-underline= ${colors.yellow}
+label-focused-foreground = #dadada
+label-focused-background = #458588
+label-focused-underline= ${colors.foreground}
 label-focused-padding = 1
 
 label-occupied = %index%
-label-occupied-background = ${colors.darkred}
-;label-occupied-underline = ${colors.red}
+label-occupied-background = #504945
+label-occupied-underline = #dadada
 label-occupied-padding = 1
 
 label-urgent = %index%!
@@ -111,22 +118,13 @@ label-empty-padding = 1
 
 format = <label-state> <label-mode>
 
-label-monocle = " [M]"
-label-monocle-foreground = ${colors.lightgray}
-label-tiled = " [T] "
-label-tiled-foreground = ${colors.lightgray}
-label-fullscreen = "  "
-label-fullscreen-foreground = ${colors.lightgray}
-label-floating = " < > "
-label-floating-foreground = ${colors.green}
-label-pseudotiled = "  "
-label-pseudotiled-foreground = ${colors.lightgray}
-label-locked = "  "
-label-locked-foreground = ${colors.red}
-label-sticky = "  "
-label-sticky-foreground = ${colors.darkred}
-label-private =  "     "
-label-private-foreground = ${colors.blue}
+label-monocle = " (M)"
+label-tiled = " (T) "
+label-floating = " </> "
+label-pseudotiled = " (t) "
+label-locked = " 🔒 "
+label-sticky = " 📌 "
+label-private =  " ⛔ "
 
 format-foreground = ${colors.foreground}
 format-background = ${colors.background}
@@ -143,126 +141,115 @@ format =  <label>
 ;   %percentage% (default)
 label = %percentage%%
 
+[module/uptime]
+;https://github.com/jaagr/polybar/wiki/User-contributed-modules#uptime
+type = custom/script
+exec = uptime | awk -F, '{sub(".*up ",x,$1);print $1}'
+interval = 100
+label =⏳ %output%
+
 [module/cpu]
 type = internal/cpu
-interval = 2
-format-prefix = ""
-format-prefix-foreground = ${colors.red}
+interval = 3
+format-prefix = " 💻 "
+format-prefix-foreground = ${colors.darkblue}
 ;format-underline = ${colors.red}
 label = %percentage%%
-
-[module/memory]
-type = internal/memory
-interval = 2
-format-prefix = "🧠 "
-format-prefix-foreground = ${colors.gray}
-format-underline = ${colors.darkcyan}
-label = %percentage_used%%
 
 [module/wlan]
 type = internal/network
 interface = wlp2s0
 interval = 5
 
-label-connected =  %essid%
+label-connected = 📡 %essid%
 label-connected-foreground = ${colors.red}
 label-disconnected =
 
-[module/eth]
-type = internal/network
-interface = enp0s25
-interval = 3.0
-
-format-connected-underline = ${colors.darkgreen}
-;format-connected-underline = ${colors.green}
-format-connected-prefix = " "
-format-connected-prefix-foreground = ${colors.gray}
-label-connected = %local_ip%
-
-;format-disconnected =
-format-disconnected = <label-disconnected>
-format-disconnected-underline = ${self.format-connected-underline}
-label-disconnected =  %ifname%
-label-disconnected-foreground = ${colors.gray}
+[module/weather]
+type = custom/script
+exec = weather
+;label = "%output%"
+click-left = $TERMINAL -e w3m wttr.in/Sungkai &
+interval = 5000
 
 [module/date]
 type = internal/date
 interval = 60
 
-date = "[%a] %d %b %y"
+date = "(%a) %d %b %y"
 time = "%H:%M"
 
-format-foreground = ${colors.foreground}
+format-foreground = $504945
 
-format-prefix = " "
-format-prefix-foreground = ${colors.darkyellow}
+format-prefix = "📅 "
+format-prefix-foreground = ${colors.red}
 format-underline = ${colors.background}
 
-label = %time% %date%
+label = %date% 🕛 %time%
 
 [module/volume]
-type = internal/alsa
-
-format-volume = <ramp-volume> <label-volume>
-format-muted =  0%
-
-ramp-volume-0 = 
-ramp-volume-1 = 
-ramp-volume-2 = 
-ramp-volume-foreground = ${colors.magenta}
+type = custom/script
+exec = volume
+label = "%output%"
+;click-left = $TERMINAL -e w3m wttr.in/Adelaide &
+initial = 1
 
 [module/battery]
 type = internal/battery
 battery = BAT0
 adapter = ADP1
+full-at = 99
+
+format-charging = 🔌 <label-charging>
+format-charging-underline = ${colors.background}
+
+format-discharging = <ramp-capacity> <label-discharging>
+format-discharging-underline = ${self.format-charging-underline}
+
+format-full-prefix = "♻"
+format-full-prefix-foreground = ${colors.green}
+format-full-underline = ${self.format-charging-underline}
+
+ramp-capacity-0 = 🔋
+
+[module/battery2]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
 full-at = 98
 
-;format-charging = Charging... <label-charging>
-format-charging = <animation-charging> <label-charging>
+format-charging =  <label-charging>
+format-charging-prefix-foreground = ${colors.yellow}
 format-charging-underline = ${colors.background}
 
 ;format-discharging = <label-discharging>
 format-discharging = <ramp-capacity> <label-discharging>
 format-discharging-underline = ${self.format-charging-underline}
 
-format-full-prefix = " "
+format-full-prefix = "  "
 format-full-prefix-foreground = ${colors.green}
 format-full-underline = ${self.format-charging-underline}
 
-ramp-capacity-0 = 
-ramp-capacity-1 = 
-ramp-capacity-2 = 
-ramp-capacity-3 = 
-ramp-capacity-4 = 
-ramp-capacity-foreground = ${colors.darkgreen}
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-foreground = ${colors.green}
 
-animation-charging-0 = 
-animation-charging-1 = 
-animation-charging-2 = 
-animation-charging-3 = 
-animation-charging-4 = 
-animation-charging-foreground = ${colors.darkgreen}
-animation-charging-framerate = 500
+;animation-charging-0 = 
+;animation-charging-1 = 
+;animation-charging-2 = 
+;animation-charging-3 = 
+;animation-charging-4 = 
+;animation-charging-foreground = ${colors.darkgreen}
+;animation-charging-framerate = 500
 
 [module/temperature]
 type = internal/temperature
-interval = 5
-thermal-zone = 0
-warn-temperature = 60
+interval = 15
 
 format = <ramp> <label>
-format-underline = ${colors.background}
-format-warn = <ramp> <label-warn>
-format-warn-underline = ${self.format-underline}
-
 label = %temperature-c%
-label-warn = %temperature-c%
-label-warn-foreground = ${colors.red}
 
-ramp-0 = 
-ramp-1 = 
-ramp-2 = 
-ramp-foreground = ${colors.blue}
+ramp-0 = 🌡
 
 ;**********************************************************
 ;
