@@ -16,7 +16,7 @@ super + shift + {q,r}
 	bspc {quit,wm -r}
 
 # close and kill
-super + shift + c
+super + q
 	bspc node -c
 
 # send the newest marked node to the newest preselected node
@@ -24,6 +24,10 @@ super + y
 	bspc node newest.marked.local -n newest.!automatic.local
 
 # STATE/FLAGS
+
+# set the window state
+super + {t,shift + t}
+	bspc node -t {tiled,pseudo_tiled}
 
 # Toggle floating on and off
 super + o
@@ -145,10 +149,6 @@ super + shift + Escape
 	prompt 'Leave Xorg?' 'killall Xorg'
 super + x
 	 slock & xset dpms force off ; mpc pause ; pauseallmpv
-XF86MonBrightnessDown
-	xbacklight -dec 10
-XF86MonBrightnessUp
-	xbacklight -inc 10
 
 # Recording
 # Take screenshot
@@ -165,6 +165,10 @@ super + Delete
 
 # Audiokeys
 # volume control
+XF86MonBrightnessDown
+	xbacklight -dec 10
+XF86MonBrightnessUp
+	xbacklight -inc 10
 XF86Audio{LowerVolume,RaiseVolume,Mute}
  	pamixer {-d 5,-i 5,-t}
 XF86Audio{Next,Prev}
@@ -179,3 +183,30 @@ XF86Calculator
 # make sxhkd reload its configuration files:
 super + Escape
 	pkill -USR1 -x sxhkd
+
+
+# Pause audio
+super + shift + p
+	mpc toggle
+#super + shift + p
+#	mpc pause; pauseallmpv
+# Changes to next/previous tracks
+super + {comma,period}
+	mpc {prev,next}
+# Restart track
+super + shift + less
+	mpc seek 0%
+# Seek foward in song
+super + {_,shift +} bracketright
+	mpc seek +{10,120}
+# Seek backward in song
+super + {_,shift +} bracketleft
+	mpc seek -{10,120}
+# Increase volume
+super + {equal,plus}
+	amixer sset Master {5,15}%+
+# Decrease volume
+super {_,shift +} + minus
+	amixer sset Master {5,15}%-
+super + shift + m
+	amixer sset Master toggle
