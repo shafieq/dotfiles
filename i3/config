@@ -10,7 +10,7 @@ set $hibernate sudo -A systemctl suspend
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:JetBrains Mono 10
+font pango:JetBrains Mono 9
 
 # #---Dropdown Windows---# #
 # General dropdown window traits. The order can matter.
@@ -23,25 +23,6 @@ for_window [instance="dropdown_dropdowncalc"] resize set 800 300
 for_window [instance="dropdown_tmuxdd"] border pixel 3
 for_window [instance="dropdown_dropdowncalc"] border pixel 2
 for_window [instance="dropdown_*"] move position center
-
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-bar {
-  font pango:JetBrains Mono 10
-  status_command i3blocks
-  position bottom
-  id bar-bottom
-  tray_output primary
-  colors {
-    separator #888888
-    background #1c1b1a
-    statusline #e4e4e4
-    focused_workspace #005577 #005577 #FFFFFF
-    active_workspace #928374 #928374 #FFFFFF
-    inactive_workspace #333333 #111111 #888888
-    urgent_workspace #C20000 #C20000 #FFFFFF
-  }
-}
 
 client.focused #005577 #005577 #FFFFFF #cc241d
 client.focused_inactive #222222 #222222 #888888 #cc241d
@@ -67,12 +48,21 @@ bindsym $mod+u			exec --no-startup-id ddspawn tmuxdd
 workspace_auto_back_and_forth 	yes
 bindsym $mod+Tab 		workspace back_and_forth
 bindsym $mod+backslash  	workspace back_and_forth
+bindsym $mod+Home		workspace $ws1
+bindsym $mod+Shift+Home		move container to workspace $ws1
+bindsym $mod+End		workspace $ws10
+bindsym $mod+Shift+End		move container to workspace $ws10
+bindsym $mod+Prior		workspace prev
+bindsym $mod+Shift+Prior	move container to workspace prev
+bindsym $mod+Next		workspace next
+bindsym $mod+Shift+Next		move container to workspace next
+bindsym $mod+semicolon		workspace next
+bindsym $mod+Shift+slash	kill
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-
 bindsym $mod+Return 		exec $term
 bindsym $mod+shift+Return	exec --no-startup-id samedir
 
@@ -207,7 +197,10 @@ bindsym $mod+Shift+BackSpace	exec --no-startup-id prompt "Reboot computer?" "$re
 bindsym $mod+Shift+x		exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
 
 # lock
-bindsym $mod+Shift+z		exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && slock &
+bindsym $mod+Shift+z		exec --no-startup-id xset dpms force off && mpc pause && pauseallmpv && slock
+
+#restart networkManager
+bindsym $mod+F12      	exec --no-startup-id $netrefresh
 
 # window switcher
 bindsym $mod+space exec "rofi -show window"
@@ -216,20 +209,20 @@ bindsym $mod+space exec "rofi -show window"
 bindsym $mod+g [urgent=latest] focus
 
 # alternative with multimedia keys
-bindsym XF86AudioMute		exec --no-startup-id pulsemixer --toggle-mute
-bindsym XF86AudioLowerVolume	exec --no-startup-id pulsemixer --change-volume -5
-bindsym Shift+XF86AudioLowerVolume	exec --no-startup-id pulsemixer --change-volume -10
-bindsym Control+XF86AudioLowerVolume	exec --no-startup-id pulsemixer --change-volume -1
-bindsym XF86AudioRaiseVolume	exec --no-startup-id pulsemixer --change-volume +5
-bindsym Shift+XF86AudioRaiseVolume	exec --no-startup-id pulsemixer --change-volume +10
-bindsym Control+XF86AudioRaiseVolume	exec --no-startup-id pulsemixer --change-volume +1
+bindsym XF86AudioMute			exec --no-startup-id pulsemixer --toggle-mute && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioLowerVolume		exec --no-startup-id pulsemixer --change-volume -5 && pkill -RTMIN+10 i3blocks
+bindsym Shift+XF86AudioLowerVolume	exec --no-startup-id pulsemixer --change-volume -10 && pkill -RTMIN+10 i3blocks
+bindsym Control+XF86AudioLowerVolume	exec --no-startup-id pulsemixer --change-volume -1 && pkill -RTMIN+10 i3blocks
+bindsym XF86AudioRaiseVolume		exec --no-startup-id pulsemixer --change-volume +5 && pkill -RTMIN+10 i3blocks
+bindsym Shift+XF86AudioRaiseVolume	exec --no-startup-id pulsemixer --change-volume +10 && pkill -RTMIN+10 i3blocks
+bindsym Control+XF86AudioRaiseVolume	exec --no-startup-id pulsemixer --change-volume +1 && pkill -RTMIN+10 i3blocks
 
 # #---Media Keys---# #
 # Volume keys
-bindsym $mod+plus		exec --no-startup-id pulsemixer --change-volume +5
-bindsym $mod+Shift+plus		exec --no-startup-id pulsemixer --change-volume +15
-bindsym $mod+minus 		exec --no-startup-id pulsemixer --change-volume -5
-bindsym $mod+Shift+minus	exec --no-startup-id pulsemixer --change-volume -15
+bindsym $mod+plus		exec --no-startup-id pulsemixer --change-volume +5 && pkill -RTMIN+10 i3blocks
+bindsym $mod+Shift+plus		exec --no-startup-id pulsemixer --change-volume +15 && pkill -RTMIN+10 i3blocks
+bindsym $mod+minus 		exec --no-startup-id pulsemixer --change-volume -5 && pkill -RTMIN+10 i3blocks
+bindsym $mod+Shift+minus	exec --no-startup-id pulsemixer --change-volume -15 && pkill -RTMIN+10 i3blocks
 
 # select sink and source
 bindsym Print 			exec --no-startup-id maim pic-full-"$(date '+%y%m%d-%H%M-%S').png"
@@ -269,39 +262,21 @@ bindsym $mod+grave		exec --no-startup-id dmenuunicode
 # Show selection:
 bindsym $mod+Insert		exec --no-startup-id notify-send "📋 Clipboard contents:" "$(xclip -o -selection clipboard)"
 
-bindsym $mod+Shift+w		exec $term -e nmtui
+bindsym $mod+Shift+g		exec --no-startup-id gimp; workspace $ws5
 
-bindsym $mod+i 			exec $term -e htop
+bindsym $mod+y			exec $term -e calcurse
 
-bindsym $mod+p			exec --no-startup-id mpc toggle
-bindsym $mod+Shift+p		exec --no-startup-id mpc pause
+bindsym $mod+p 			exec $term -e ranger
 
-bindsym $mod+Shift+m		exec --no-startup-id pulsemixer --toggle-mute
+bindsym $mod+Shift+e		exec $term -e neomutt
 
-bindsym $mod+Shift+v		exec --no-startup-id $term -e $EDITOR -c "VimwikiIndex"
-
-#bindsym $mod+Shift+ 		exec $term -e vifm
-bindsym $mod+b			bar mode toggle
-
-# split in horizontal orientation
-# split in vertical orientation
-bindsym $mod+v split toggle
-
-for_window [class="Pinentry"] sticky enable
-for_window [class="sent"] border pixel 0px
-for_window [title="GIMP Startup"] move workspace $ws5
-for_window [class="Gimp"] move workspace $ws5
-for_window [window_role="GtkFileChooserDialog"] resize set 800 600
-for_window [window_role="GtkFileChooserDialog"] move position center
-for_window [title="Default - Wine desktop"] floating enable
-
-# Bindings to make the webcam float and stick.
-for_window [title="mpvfloat"] floating enable
-for_window [title="mpvfloat"] sticky enable
-for_window [title="mpvfloat"] border pixel 0
-no_focus [title="mpvfloat"]
-
-# #---Extra XF86 Keys---# #
-bindsym XF86MonBrightnessDown	exec --no-startup-id xbacklight -dec 15
-bindsym XF86MonBrightnessUp	exec --no-startup-id xbacklight -inc 15
-bindsym XF86Calculator		exec --no-startup-id ddspawn dropdowncalc -f mono:pixelsize=24
+# autostart:
+exec unclutter
+exec launch_polybar
+exec xfce4-power-manager
+exec remaps
+exec setbg
+exec picom
+exec dunst
+exec xset r rate 300 50
+exec bluetoothctl power on &
